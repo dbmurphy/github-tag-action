@@ -28,6 +28,7 @@ export default async function main() {
   const commitMethod = core.getInput('commit_method');
   const customReleaseRules = core.getInput('custom_release_rules');
   const shouldFetchAllTags = core.getInput('fetch_all_tags');
+  const commitSha = core.getInput('commit_sha');
 
   let mappedReleaseRules;
   if (customReleaseRules) {
@@ -41,8 +42,9 @@ export default async function main() {
     return;
   }
 
-  if (!GITHUB_SHA) {
-    core.setFailed('Missing GITHUB_SHA.');
+  const commitRef = commitSha || GITHUB_SHA;
+  if (!commitRef) {
+    core.setFailed('Missing commit_sha or GITHUB_SHA.');
     return;
   }
 
