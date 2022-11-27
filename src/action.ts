@@ -80,7 +80,7 @@ export default async function main() {
   let newVersion: string;
 
   if (customTag) {
-    commits = await getCommits(latestTag.commit.sha, GITHUB_SHA);
+    commits = await getCommits(latestTag.commit.sha, commitRef);
 
     core.setOutput('release_type', 'custom');
     newVersion = customTag;
@@ -117,10 +117,10 @@ export default async function main() {
     core.setOutput('previous_tag', previousTag.name);
 
     if (commitMethod == 'tag') {
-      commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+      commits = await getCommits(previousTag.commit.sha, commitRef);
     } else if (isPullRequest) {
       const baseRef = context?.payload?.pull_request?.base?.sha;
-      commits = await getCommits(baseRef, GITHUB_SHA);
+      commits = await getCommits(baseRef, commitRef);
     } else {
       core.setFailed('commitMethod is not "tag" but we are not in a PR.');
       return;
@@ -213,5 +213,5 @@ export default async function main() {
     return;
   }
 
-  await createTag(newTag, createAnnotatedTag, GITHUB_SHA);
+  await createTag(newTag, createAnnotatedTag, commitRef);
 }
