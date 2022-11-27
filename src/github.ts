@@ -69,27 +69,38 @@ export async function compareCommits(baseRef: string, headRef: string) {
  * fetch PRDetails if we are in a PR
  */
 export async function fetchPRDetails() {
-  core.info("FetcPR Started");
-  const octokit = getOctokitSingleton();
-  core.info("getOctokitSingleton Started");
-  core.info(JSON.stringify(octokit));
-  core.info(JSON.stringify(context));
-  if( 'pull_request' in context.payload) {
-    core.debug(`Get PR Details`);
-    const pull_request = await octokit.rest.pulls.get({
-      ...context.repo,
-      pull_number: context.payload.pull_request?.number,
-    });
+  // core.info("FetcPR Started");
+  // const octokit = getOctokitSingleton();
+  // core.info("getOctokitSingleton Started");
+  // core.info(JSON.stringify(octokit));
+  // core.info(JSON.stringify(context));
+  // if( 'pull_request' in context.payload) {
+  //   core.debug(`Get PR Details`);
+  //   const pull_request = await octokit.rest.pulls.get({
+  //     ...context.repo,
+  //     pull_number: context.payload.pull_request?.number,
+  //   });
+  //
+  //    const pull_merged = await octokit.rest.pulls.checkIfMerged({
+  //     ...context.repo,
+  //     pull_number: context.payload.pull_request?.number,
+  //   });
+  //   return {
+  //     base_sha: pull_request.base.sha,
+  //     head_sha: pull_request.head.sha,
+  //     merged: pull_merged.merged,
+  //   };
+  // }
 
-     const pull_merged = await octokit.rest.pulls.checkIfMerged({
-      ...context.repo,
-      pull_number: context.payload.pull_request?.number,
-    });
-    return {
-      base_sha: pull_request.base.sha,
-      head_sha: pull_request.head.sha,
-      merged: pull_merged.merged,
-    };
+  if( context.payload?.pull_request?.state == 'open'  ||
+        (context.payload?.pull_request?.state == 'closed' && context.payload?.pull_request?.merged)
+  ){
+      core.debug('Found a PR for versioning.');
+      return {
+        head_sha : context.payload?.pull_request?.head.sha,
+        base_sha : context.payload?.pull_request?.base.sha,
+        merged:   context.payload?.pull_request?.merged,
+    }
   }
 }
 
