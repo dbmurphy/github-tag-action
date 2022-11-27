@@ -65,6 +65,30 @@ export async function compareCommits(baseRef: string, headRef: string) {
   return commits.data.commits;
 }
 
+/**
+ * fetch PRDetails if we are in a PR
+ */
+export async function fetchPRDetails() {
+  const octokit = getOctokitSingleton();
+  if( 'pull_request' in context.payload) {
+    core.debug(`Get PR Details`);
+    const pull_request = await octokit.rest.pulls.get({
+      ...context.repo,
+      number: context.payload.pull_request?.number,
+    });
+
+     const pull_merged = await octokit.rest.pulls.checkIfMerged({
+      ...context.repo,
+      number: context.payload.pull_request?.number,
+    });
+    return {
+      base_sha: pull_request.base.sha,
+      head_sha: pull_request.head.sha,
+      merged: pull_merged.merged,
+    };
+  }
+}
+
 export async function createTag(
   newTag: string,
   createAnnotatedTag: boolean,

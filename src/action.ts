@@ -6,6 +6,7 @@ import {
   getBranchFromRef,
   isPr,
   getCommits,
+  getPRDetails,
   getLatestPrereleaseTag,
   getLatestTag,
   getValidTags,
@@ -26,6 +27,7 @@ export default async function main() {
   const dryRun = core.getInput('dry_run');
   const customReleaseRules = core.getInput('custom_release_rules');
   const shouldFetchAllTags = core.getInput('fetch_all_tags');
+  const changelogCommitStyle= core.getInput('changelog_commit_style');
 
   let mappedReleaseRules;
   if (customReleaseRules) {
@@ -72,6 +74,7 @@ export default async function main() {
   );
 
   let commits: Await<ReturnType<typeof getCommits>>;
+  let pr_details: Await<ReturnType<typeof getPRDetails>>;
 
   let newVersion: string;
 
@@ -112,7 +115,12 @@ export default async function main() {
     core.setOutput('previous_version', previousVersion.version);
     core.setOutput('previous_tag', previousTag.name);
 
-    commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+    if (changelogCommitStyle){
+      pr_details = await getPRDetails();
+      commits = await getCommits(pr_details.base_sha, pr_details.head.sha);
+    } else {
+      commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+    }
 
     let bump = await analyzeCommits(
       {

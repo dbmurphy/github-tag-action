@@ -2,9 +2,10 @@ import * as core from '@actions/core';
 import { prerelease, rcompare, valid } from 'semver';
 // @ts-ignore
 import DEFAULT_RELEASE_TYPES from '@semantic-release/commit-analyzer/lib/default-release-types';
-import { compareCommits, listTags } from './github';
+import {compareCommits, fetchPRDetails, listTags} from './github';
 import { defaultChangelogRules } from './defaults';
 import { Await } from './ts';
+import {context} from "@actions/github";
 
 type Tags = Await<ReturnType<typeof listTags>>;
 
@@ -40,6 +41,11 @@ export async function getCommits(baseRef: string, headRef: string) {
       message: commit.commit.message,
       hash: commit.sha,
     }));
+}
+
+export async function getPRDetails() {
+  const pr_details = await fetchPRDetails();
+  return pr_details;
 }
 
 export function getBranchFromRef(ref: string) {

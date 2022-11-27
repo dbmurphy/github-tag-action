@@ -52,6 +52,10 @@ inputs:
     description: "Do not perform tagging, just calculate next version and changelog, then exit."
     required: false
     default: "false"
+  changelog_commit_style:
+    description: "Detect commit from 'tags' or 'pr's', sometime you need prs to avoid temporal issues"
+    required: false
+    default: "tags"
 
 runs:
   using: "node12"
