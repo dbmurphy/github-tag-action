@@ -27,11 +27,11 @@ export function getOctokitSingleton() {
 }
 
 export function getOctokitRESTSingleton() {
-  if (octokitSingleton) {
-    return octokitSingleton;
+  if (octokitRESTSingleton) {
+    return octokitRESTSingleton;
   }
   const githubToken = core.getInput('github_token');
-  octokitSingleton = getOctokit(githubToken);
+  octokitRESTSingleton = getOctokit(githubToken);
   return octokitSingleton;
 }
 /**
