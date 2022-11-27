@@ -120,7 +120,7 @@ export default async function main() {
 
     switch(changelogCommitStyle) {
       case 'tags': {
-        core.debug('Running in classic Commit mode');
+        core.info('Running in classic Commit mode');
         commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
         break;
       }
@@ -130,6 +130,7 @@ export default async function main() {
           core.setFailed('Unable to find commits vis PR method');
           return;
         }
+        core.info("Using new pr based commit finder");
         commits = await getCommits(pr_details.base_sha, pr_details.head_sha);
         break;
       }
@@ -138,7 +139,8 @@ export default async function main() {
         return;
       }
     }
-
+    let commit_count = commits.length;
+    core.info("We found "+commit_count+" commits to consider!");
     let bump = await analyzeCommits(
       {
         releaseRules: mappedReleaseRules
