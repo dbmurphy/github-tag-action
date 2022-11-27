@@ -1,10 +1,8 @@
 import { context, getOctokit } from '@actions/github';
 import * as core from '@actions/core';
-import {  Octokit } from '@octokit/rest';
 import { Await } from './ts';
 
 let octokitSingleton: ReturnType<typeof getOctokit>;
-let octokitRESTSingleton: ReturnType<typeof getOctokit>;
 
 type Tag = {
   name: string;
@@ -26,14 +24,6 @@ export function getOctokitSingleton() {
   return octokitSingleton;
 }
 
-export function getOctokitRESTSingleton() {
-  if (octokitRESTSingleton) {
-    return octokitRESTSingleton;
-  }
-  const githubToken = core.getInput('github_token');
-  octokitRESTSingleton = getOctokit(githubToken);
-  return octokitSingleton;
-}
 /**
  * Fetch all tags for a given repository recursively
  */
@@ -79,7 +69,11 @@ export async function compareCommits(baseRef: string, headRef: string) {
  * fetch PRDetails if we are in a PR
  */
 export async function fetchPRDetails() {
-  const octokit = getOctokitRESTSingleton();
+  core.info("FetcPR Started");
+  const octokit = getOctokitSingleton();
+  core.info("getOctokitSingleton Started");
+  core.info(JSON.stringify(octokit));
+  core.info(JSON.stringify(context));
   if( 'pull_request' in context.payload) {
     core.debug(`Get PR Details`);
     const pull_request = await octokit.rest.pulls.get({
