@@ -91,7 +91,8 @@ export async function fetchPRDetails() {
   //     merged: pull_merged.merged,
   //   };
   // }
-
+  core.debug('Print Context');
+  core.debug(JSON.stringify(context.payload));
   if( context.payload?.pull_request?.state == 'open'  ||
         (context.payload?.pull_request?.state == 'closed' && context.payload?.pull_request?.merged)
   ){
