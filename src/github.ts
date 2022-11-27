@@ -1,5 +1,6 @@
 import { context, getOctokit } from '@actions/github';
 import * as core from '@actions/core';
+const { Octokit } = require("@octokit/rest");
 import { Await } from './ts';
 
 let octokitSingleton: ReturnType<typeof getOctokit>;
@@ -74,12 +75,12 @@ export async function fetchPRDetails() {
     core.debug(`Get PR Details`);
     const pull_request = await octokit.rest.pulls.get({
       ...context.repo,
-      number: context.payload.pull_request?.number,
+      pull_number: context.payload.pull_request?.number,
     });
 
      const pull_merged = await octokit.rest.pulls.checkIfMerged({
       ...context.repo,
-      number: context.payload.pull_request?.number,
+      pull_number: context.payload.pull_request?.number,
     });
     return {
       base_sha: pull_request.base.sha,

@@ -15,6 +15,7 @@ import {
 } from './utils';
 import { createTag } from './github';
 import { Await } from './ts';
+import { context } from '@actions/github';
 
 export default async function main() {
   const defaultBump = core.getInput('default_bump') as ReleaseType | 'false';
@@ -115,11 +116,27 @@ export default async function main() {
     core.setOutput('previous_version', previousVersion.version);
     core.setOutput('previous_tag', previousTag.name);
 
-    if (changelogCommitStyle){
-      pr_details = await getPRDetails();
-      commits = await getCommits(pr_details.base_sha, pr_details.head.sha);
-    } else {
-      commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+
+
+    switch(changelogCommitStyle) {
+      case 'tags': {
+        core.debug('Running in classic Commit mode');
+        commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+        break;
+      }
+      case 'prs': {
+        pr_details = await getPRDetails();
+        if (pr_details == undefined) {
+          core.setFailed('Unable to find commits vis PR method');
+          return;
+        }
+        commits = await getCommits(pr_details.base_sha, pr_details.head_sha);
+        break;
+      }
+      default: {
+        core.setFailed('Unknown option for changelog_commit_style');
+        return;
+      }
     }
 
     let bump = await analyzeCommits(
