@@ -80,8 +80,8 @@ function getClosedPRCommits(){
         core.info(JSON.stringify(context.payload.commits[0]))
         core.info("Message is")
         core.info(JSON.stringify(context.payload.commits[0].message))
-        for (let commit_item in context.payload.commits){
-            core.info(commit_item)
+        for (let i in context.payload.commits){
+            core.info(context.payload.commits[i])
         }
         // commits = JSON.parse(JSON.stringify(context.payload.commits))
         if (pr_commit_count){
