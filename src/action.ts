@@ -118,27 +118,10 @@ export default async function main() {
 
 
 
-    switch(changelogCommitStyle) {
-      case 'tags': {
-        core.info('Running in classic Commit mode');
-        commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
-        break;
-      }
-      case 'prs': {
-        pr_details = await getPRDetails();
-        if (pr_details == undefined) {
-          core.setFailed('Unable to find commits vis PR method');
-          return;
-        }
-        core.info("Using new pr based commit finder");
-        commits = await getCommits(pr_details.base_sha, pr_details.head_sha);
-        break;
-      }
-      default: {
-        core.setFailed('Unknown option for changelog_commit_style');
-        return;
-      }
-    }
+
+
+    commits = await getCommits(previousTag.commit.sha, GITHUB_SHA);
+
     let commit_count = commits.length;
     core.info("We found "+commit_count+" commits to consider!");
     let bump = await analyzeCommits(
