@@ -76,7 +76,6 @@ function getClosedPRCommits(){
         let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
         for (let i in context.payload.commits){
-            commits = Array<FinalCommit>();
             core.debug("Commit before casting")
             core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             context.payload.commits[i] = {
