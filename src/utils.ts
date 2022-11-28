@@ -70,11 +70,9 @@ function getClosedPRCommits(){
     core.info("About to check context type");
     if( !('pull_request' in context.payload)){
         core.info("We were not a PR context");
-        core.info("Parsing Payload");
-        let parsed_payload = JSON.parse(context.payload.commits);
-        core.info("Parsed the payload");
-        core.info(parsed_payload);
-        let pr_commit_count = parsed_payload.length;
+        core.info(JSON.stringify(context.payload.commits))
+        core.info("Getting payload commit length via parsing");
+        let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
         if (pr_commit_count){
             commits = JSON.parse(context.payload.commits)
