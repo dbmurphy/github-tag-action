@@ -50,8 +50,10 @@ interface FinalCommit {
 export async function getCommits(baseRef: string, headRef: string) {
   let commits: Array<FinalCommit>|undefined = [];
   commits = await compareCommits(baseRef, headRef);
+  core.info("We found "+ commits.length +" commits using classic compare")
   if(commits.length < 1)
       commits = getClosedPRCommits();
+  core.info("We found "+ commits?.length||'unknown' +" commits after PRCommits")
   if(commits != undefined)
       return commits
         .filter((commit: FinalCommit) => !!commit.commit.message)
@@ -65,8 +67,11 @@ export async function getCommits(baseRef: string, headRef: string) {
 
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
+    core.info(JSON.stringify(context.payload.pull_request))
     if('pull_request' in context.payload && (context.payload.pull_request?.base_ref)){
-        if (JSON.parse(context.payload?.pull_request?.commits).length){
+        let pr_commit_count = JSON.parse(context.payload?.pull_request?.commits).length
+        core.info("We found "+ pr_commit_count+" commits from the PR.")
+        if (pr_commit_count){
             commits = JSON.parse(context.payload?.pull_request?.commits)
                 .filter((commit: PayloadCommit) => !!commit.message)
                 .map((commit: PayloadCommit) => ({
