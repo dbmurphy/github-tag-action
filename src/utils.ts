@@ -49,7 +49,7 @@ interface FinalCommit {
 }
 
 export async function getCommits(baseRef: string, headRef: string) {
-  let commits: Array<FinalCommit>|undefined = [];
+  let commits: Array<FinalCommit>;
   commits = await compareCommits(baseRef, headRef);
   core.info("We found "+ commits.length +" commits using classic compare!")
   if(commits.length < 1)
@@ -67,7 +67,7 @@ export async function getCommits(baseRef: string, headRef: string) {
 }
 
 function getClosedPRCommits(){
-    let commits: Array<FinalCommit>|undefined;
+    let commits = Array<FinalCommit>();
     core.info("About to check context type");
     if( !('pull_request' in context.payload)){
         core.info("We were not a PR context");
@@ -86,8 +86,8 @@ function getClosedPRCommits(){
             core.debug("Commit after casting")
             core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             commits.push(context.payload.commits[i])
-            core.info("After processing we are going to present "+ commits.length +" commits!")
         }
+        core.info("After processing we are going to present " + commits.length + " commits!")
 
     }
     return commits;
