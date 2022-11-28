@@ -68,11 +68,11 @@ export async function getCommits(baseRef: string, headRef: string) {
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
     core.info(JSON.stringify(context.payload))
-    if('pull_request' in context.payload && (context.payload.pull_request?.base_ref)){
-        let pr_commit_count = JSON.parse(context.payload?.pull_request?.commits).length
+    if('pull_request' ! in context.payload && (context.payload.pull_request?.base_ref)){
+        let pr_commit_count = JSON.parse(context.payload?.commits).length
         core.info("We found "+ pr_commit_count+" commits from the PR.")
         if (pr_commit_count){
-            commits = JSON.parse(context.payload?.pull_request?.commits)
+            commits = JSON.parse(context.payload?.commits)
                 .filter((commit: PayloadCommit) => !!commit.message)
                 .map((commit: PayloadCommit) => ({
                     message: commit.message,
