@@ -68,7 +68,7 @@ export async function getCommits(baseRef: string, headRef: string) {
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
     if('pull_request' ! in context.payload){
-        core.info(JSON.stringify(context.payload.commits))
+        core.info("Foobar:::"+JSON.stringify(context.payload.commits))
         let pr_commit_count = JSON.parse(context.payload.commits).length
         core.info("We found "+ pr_commit_count+" commits from the PR.")
         if (pr_commit_count){
