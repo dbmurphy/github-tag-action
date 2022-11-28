@@ -50,7 +50,7 @@ interface FinalCommit {
 export async function getCommits(baseRef: string, headRef: string) {
   let commits: Array<FinalCommit>|undefined = [];
   commits = await compareCommits(baseRef, headRef);
-  core.info("We found "+ commits.length +" commits using classic compare")
+  core.info("We found "+ commits.length +" commits using classic compare!")
   if(commits.length < 1)
       commits = getClosedPRCommits();
   core.info("We found "+ commits?.length||'unknown' +" commits after PRCommits")
