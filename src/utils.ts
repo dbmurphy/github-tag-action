@@ -83,13 +83,12 @@ function getClosedPRCommits(){
         for (let i in context.payload.commits){
             core.info("Commit before casting")
             core.info(JSON.stringify(context.payload.commits[i],null, 2));
-            context.payload.commits[i] = context.payload.commits[i] as FinalCommit
-            core.info("Commit after casting")
+            context.payload.commits[i] = {
+                message: {message: context.payload.commits[i].message },
+                sha: context.payload.commits[i].id
+            }
             core.info(JSON.stringify(context.payload.commits[i],null, 2));
-            // commits.push({
-            //     commit: {message: context.payload.commits[i].message},
-            //     sha: context.payload.commits[i].id
-            // })
+
         }
         // commits = JSON.parse(JSON.stringify(context.payload.commits))
         if (pr_commit_count){
