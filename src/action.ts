@@ -6,7 +6,6 @@ import {
   getBranchFromRef,
   isPr,
   getCommits,
-  getPRDetails,
   getLatestPrereleaseTag,
   getLatestTag,
   getValidTags,
@@ -15,7 +14,6 @@ import {
 } from './utils';
 import { createTag } from './github';
 import { Await } from './ts';
-import { context } from '@actions/github';
 
 export default async function main() {
   const defaultBump = core.getInput('default_bump') as ReleaseType | 'false';
@@ -28,7 +26,6 @@ export default async function main() {
   const dryRun = core.getInput('dry_run');
   const customReleaseRules = core.getInput('custom_release_rules');
   const shouldFetchAllTags = core.getInput('fetch_all_tags');
-  const changelogCommitStyle= core.getInput('changelog_commit_style');
 
   let mappedReleaseRules;
   if (customReleaseRules) {
@@ -75,7 +72,6 @@ export default async function main() {
   );
 
   let commits: Await<ReturnType<typeof getCommits>>;
-  let pr_details: Await<ReturnType<typeof getPRDetails>>;
 
   let newVersion: string;
 

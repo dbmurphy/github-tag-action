@@ -4,13 +4,11 @@ import { prerelease, rcompare, valid } from 'semver';
 import DEFAULT_RELEASE_TYPES from '@semantic-release/commit-analyzer/lib/default-release-types';
 import {
     compareCommits,
-    fetchPRDetails,
     listTags
 } from './github';
 import { defaultChangelogRules } from './defaults';
 import { Await } from './ts';
 import {context} from "@actions/github";
-import {stringify} from "querystring";
 
 type Tags = Await<ReturnType<typeof listTags>>;
 
@@ -37,10 +35,6 @@ export async function getValidTags(
   return validTags;
 }
 
-interface PayloadCommit {
-    message: string;
-    id: string;
-}
 interface FinalCommit {
     sha: string | null;
     commit: {
@@ -49,21 +43,23 @@ interface FinalCommit {
 }
 
 export async function getCommits(baseRef: string, headRef: string) {
-  let commits: Array<FinalCommit>;
-  commits = await compareCommits(baseRef, headRef);
-  core.info("We found "+ commits.length +" commits using classic compare!")
-  if(commits.length < 1)
-      commits = getClosedPRCommits();
-  // core.info("We found "+ commits?.length||'unknown' +" commits after PRCommits")
-  if(commits != undefined)
-      return commits
+    let commits: Array<FinalCommit>;
+    commits = await compareCommits(baseRef, headRef);
+    core.debug("We found " + commits.length + " commits using classic compare!")
+    if (commits.length < 1) {
+        core.debug("We did not find enough commit, attempting to scan closed PR method.")
+        commits = getClosedPRCommits();
+    }
+    if (commits.length == 0) {
+        return []
+    }
+
+    return commits
         .filter((commit: FinalCommit) => !!commit.commit.message)
         .map((commit: FinalCommit) => ({
-          message: commit.commit.message,
-          hash: commit.sha,
+            message: commit.commit.message,
+            hash: commit.sha,
         }))
-    return []
-
 }
 
 function getClosedPRCommits(){
@@ -92,11 +88,7 @@ function getClosedPRCommits(){
     return commits;
 }
 
-export async function getPRDetails() {
-  return fetchPRDetails();
-}
-
-export function getBranchFromRef(ref: string) {
+    export function getBranchFromRef(ref: string) {
   return ref.replace('refs/heads/', '');
 }
 
