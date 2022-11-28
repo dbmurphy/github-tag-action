@@ -68,7 +68,7 @@ export async function getCommits(baseRef: string, headRef: string) {
 
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
-    let commit: PayloadCommit;
+    let commit: FinalCommit;
     core.info("About to check context type");
     if( !('pull_request' in context.payload)){
         core.info("We were not a PR context");
@@ -81,15 +81,23 @@ function getClosedPRCommits(){
         core.info("Message is")
         core.info(JSON.stringify(context.payload.commits[0].message))
         for (let i in context.payload.commits){
-            core.info(JSON.stringify(context.payload.commits[i],null, 2))
+            core.info("Commit before casting")
+            core.info(JSON.stringify(context.payload.commits[i],null, 2));
+            context.payload.commits[i] = context.payload.commits[i] as FinalCommit
+            core.info("Commit after casting")
+            core.info(JSON.stringify(context.payload.commits[i],null, 2));
+            // commits.push({
+            //     commit: {message: context.payload.commits[i].message},
+            //     sha: context.payload.commits[i].id
+            // })
         }
         // commits = JSON.parse(JSON.stringify(context.payload.commits))
         if (pr_commit_count){
             commits = JSON.parse(JSON.stringify(context.payload.commits))
-                .filter((commit: PayloadCommit) => !!commit.message)
-                .map((commit: PayloadCommit) => ({
-                    message: commit.message,
-                    hash: commit.id,
+                .filter((commit: FinalCommit) => !!commit.commit.message)
+                .map((commit: FinalCommit) => ({
+                    commit: { message: commit.commit.message},
+                    hash: commit.sha,
                 }));
         }
     }
