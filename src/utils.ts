@@ -38,7 +38,7 @@ export async function getValidTags(
 
 interface PayloadCommit {
     message: string;
-    sha: string;
+    id: string;
 }
 interface FinalCommit {
     sha: string | null;
@@ -79,7 +79,7 @@ function getClosedPRCommits(){
                 .filter((commit: PayloadCommit) => !!commit.message)
                 .map((commit: PayloadCommit) => ({
                     message: commit.message,
-                    hash: commit.sha,
+                    hash: commit.id,
                 }));
         }
     }
