@@ -36,19 +36,50 @@ export async function getValidTags(
   return validTags;
 }
 
-export async function getCommits(baseRef: string, headRef: string) {
-  const commits = await compareCommits(baseRef, headRef);
+interface PayloadCommit {
+    message: string;
+    sha: string;
+}
+interface FinalCommit {
+    sha: string | null;
+    commit: {
+        message: string;
+    }
+}
 
-  return commits
-    .filter((commit) => !!commit.commit.message)
-    .map((commit) => ({
-      message: commit.commit.message,
-      hash: commit.sha,
-    }));
+export async function getCommits(baseRef: string, headRef: string) {
+  let commits: Array<FinalCommit>|undefined = [];
+  commits = await compareCommits(baseRef, headRef);
+  if(commits.length < 1)
+      commits = getClosedPRCommits();
+  if(commits != undefined)
+      return commits
+        .filter((commit: FinalCommit) => !!commit.commit.message)
+        .map((commit: FinalCommit) => ({
+          message: commit.commit.message,
+          hash: commit.sha,
+        }))
+    return []
+
+}
+
+function getClosedPRCommits(){
+    let commits: Array<FinalCommit>|undefined;
+    if('pull_request' in context.payload && (context.payload.pull_request?.base_ref)){
+        if (JSON.parse(context.payload?.pull_request?.commits).length){
+            commits = JSON.parse(context.payload?.pull_request?.commits)
+                .filter((commit: PayloadCommit) => !!commit.message)
+                .map((commit: PayloadCommit) => ({
+                    message: commit.message,
+                    hash: commit.sha,
+                }));
+        }
+    }
+    return commits;
 }
 
 export async function getPRDetails() {
-  return await fetchPRDetails();
+  return fetchPRDetails();
 }
 
 export function getBranchFromRef(ref: string) {
