@@ -75,7 +75,7 @@ function getClosedPRCommits(){
         let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
         if (pr_commit_count){
-            commits = JSON.parse(context.payload.commits)
+            commits = context.payload.commits
                 .filter((commit: PayloadCommit) => !!commit.message)
                 .map((commit: PayloadCommit) => ({
                     message: commit.message,
