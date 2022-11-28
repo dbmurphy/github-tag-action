@@ -75,21 +75,18 @@ function getClosedPRCommits(){
         core.info("Getting payload commit length via parsing");
         let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
-        core.info("Example commit was")
-        core.info(JSON.stringify(context.payload.commits[0]))
-        core.info("Message is")
-        core.info(JSON.stringify(context.payload.commits[0].message))
         for (let i in context.payload.commits){
             commits = Array<FinalCommit>();
-            core.info("Commit before casting")
-            core.info(JSON.stringify(context.payload.commits[i],null, 2));
+            core.debug("Commit before casting")
+            core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             context.payload.commits[i] = {
                 commit: {message: context.payload.commits[i].message },
                 sha: context.payload.commits[i].id
             }
-            core.info("Commit after casting")
-            core.info(JSON.stringify(context.payload.commits[i],null, 2));
+            core.debug("Commit after casting")
+            core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             commits.push(context.payload.commits[i])
+            core.info("After processing we are going to present "+ commits.length +" commits!")
         }
 
     }
