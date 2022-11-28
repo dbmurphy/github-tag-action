@@ -53,7 +53,7 @@ export async function getCommits(baseRef: string, headRef: string) {
   core.info("We found "+ commits.length +" commits using classic compare!")
   if(commits.length < 1)
       commits = getClosedPRCommits();
-  core.info("We found "+ commits?.length||'unknown' +" commits after PRCommits")
+  // core.info("We found "+ commits?.length||'unknown' +" commits after PRCommits")
   if(commits != undefined)
       return commits
         .filter((commit: FinalCommit) => !!commit.commit.message)
@@ -67,7 +67,9 @@ export async function getCommits(baseRef: string, headRef: string) {
 
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
+    core.info("About to check context type");
     if('pull_request' ! in context.payload){
+        core.info("We were not a PR context");
         core.info("Foobar:::"+JSON.stringify(context.payload.commits))
         let pr_commit_count = JSON.parse(context.payload.commits).length
         core.info("We found "+ pr_commit_count+" commits from the PR.")
