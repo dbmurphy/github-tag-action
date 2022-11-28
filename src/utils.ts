@@ -76,6 +76,8 @@ function getClosedPRCommits(){
         core.info("Getting payload commit length via parsing");
         let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
+        core.info("Example commit was")
+        core.info(JSON.stringify(context.payload.commits[0]))
         // commits = JSON.parse(JSON.stringify(context.payload.commits))
         if (pr_commit_count){
             commits = JSON.parse(JSON.stringify(context.payload.commits))
