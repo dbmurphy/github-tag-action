@@ -10,6 +10,7 @@ import {
 import { defaultChangelogRules } from './defaults';
 import { Await } from './ts';
 import {context} from "@actions/github";
+import {stringify} from "querystring";
 
 type Tags = Await<ReturnType<typeof listTags>>;
 
@@ -67,6 +68,7 @@ export async function getCommits(baseRef: string, headRef: string) {
 
 function getClosedPRCommits(){
     let commits: Array<FinalCommit>|undefined;
+    let commit: PayloadCommit;
     core.info("About to check context type");
     if( !('pull_request' in context.payload)){
         core.info("We were not a PR context");
@@ -74,9 +76,15 @@ function getClosedPRCommits(){
         core.info("Getting payload commit length via parsing");
         let pr_commit_count = context.payload.commits.length
         core.info("We found "+pr_commit_count+" commits from the PR.")
+        for (let i=0;i++;i<=pr_commit_count){
+            core.info(stringify({
+                message: JSON.parse(context.payload.commits)[i].message,
+                sha: JSON.parse(context.payload.commits)[i].sha
+            }))
+        }
         if (pr_commit_count){
             commits = context.payload.commits
-                // .filter((commit: PayloadCommit) => !!commit.message)
+                .filter((commit: PayloadCommit) => !!commit.message)
                 .map((commit: PayloadCommit) => ({
                     message: commit.message,
                     hash: commit.id,
