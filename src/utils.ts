@@ -64,22 +64,16 @@ export async function getCommits(baseRef: string, headRef: string) {
 
 function getClosedPRCommits(){
     let commits = Array<FinalCommit>();
-    core.info("About to check context type");
     if( !('pull_request' in context.payload)){
-        core.info("We were not a PR context");
-        core.info(JSON.stringify(context.payload.commits))
-        core.info("Getting payload commit length via parsing");
+        core.info("We are in a closed PR context continuing.");
+        core.debug(JSON.stringify(context.payload.commits))
         let pr_commit_count = context.payload.commits.length
-        core.info("We found "+pr_commit_count+" commits from the PR.")
+        core.info("We found "+pr_commit_count+" commits from the PR method.")
         for (let i in context.payload.commits){
-            core.debug("Commit before casting")
-            core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             context.payload.commits[i] = {
                 commit: {message: context.payload.commits[i].message },
                 sha: context.payload.commits[i].id
             }
-            core.debug("Commit after casting")
-            core.debug(JSON.stringify(context.payload.commits[i],null, 2));
             commits.push(context.payload.commits[i])
         }
         core.info("After processing we are going to present " + commits.length + " commits!")
