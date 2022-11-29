@@ -45,9 +45,9 @@ interface FinalCommit {
 export async function getCommits(baseRef: string, headRef: string) {
     let commits: Array<FinalCommit>;
     commits = await compareCommits(baseRef, headRef);
-    core.debug("We found " + commits.length + " commits using classic compare!")
+    core.info("We found " + commits.length + " commits using classic compare!")
     if (commits.length < 1) {
-        core.debug("We did not find enough commit, attempting to scan closed PR method.")
+        core.info("We did not find enough commit, attempting to scan closed PR method.")
         commits = getClosedPRCommits();
     }
     if (commits.length == 0) {
